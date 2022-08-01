@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MXD2NCT29J"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-MXD2NCT29J");
+  </script>
+  <title>BMKG Juanda - WOFI</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="img/logo.png" />
+  <!-- Meta, title, CSS, favicons, etc. -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="BMKG Stasiun Meteorologi Juanda Sidoarjo" />
+  <meta name="keywords"
+    content="BMKG Juanda, Prakiraan Cuaca, Radar Cuaca, Cuaca Penerbangan, Surabaya, Sidoarjo, Jawa Timur" />
+  <meta name="author" content="0x35" />
+  <meta name="theme-color" content="#2A3F54" />
+  <meta property="og:site_name" content="BMKG Stasiun Meteorologi Juanda Sidoarjo" />
+  <meta property="og:title" content="Weather Observation and Forecast Integrated (WOFI)" />
+  <meta property="og:description"
+    content="Info Radar Cuaca, Cuaca Bandara Juanda, Curah Hujan dan Peringatan Dini. BMKG Juanda &copy; 2020" />
+  <meta property="og:image" itemprop="image" content="https://juanda.jatim.bmkg.go.id/webkantor/img/logo_putih.png" />
+  <meta property="og:type" content="website" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.featuregroup.subgroup@1.0.2/dist/leaflet.featuregroup.subgroup.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.70.0/dist/L.Control.Locate.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.70.0/dist/L.Control.Locate.min.js"
+    charset="utf-8"></script>
+  <script src="https://unpkg.com/esri-leaflet@2.3.3/dist/esri-leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.3.2/dist/esri-leaflet-geocoder.css" />
+  <script src="https://unpkg.com/esri-leaflet-geocoder@2.3.2/dist/esri-leaflet-geocoder.js"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-groupedlayercontrol/0.6.1/leaflet.groupedlayercontrol.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-groupedlayercontrol/0.6.1/leaflet.groupedlayercontrol.min.css" />
+
+  <script src="dist/L.Modal.min.js"></script>
+  <link rel="stylesheet" href="dist/leaflet.modal.min.css" />
+  <script src="dist/L.KML.js"></script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    #map {
+      height: 100%;
+      width: 100vw;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+  <script>
+    var peringatandini = "";
+
+    var layercmax = L.layerGroup();
+    var layereht = L.layerGroup();
+    var layerhwind = L.layerGroup();
+    var layerrtr = L.layerGroup();
+    var layersri = L.layerGroup();
+    var layerpac1h = L.layerGroup();
+    var layerpac1d = L.layerGroup();
+    var layerctr = L.layerGroup();
+    var layerswi = L.layerGroup();
+    var layerews = L.layerGroup();
+    var layercb = L.layerGroup();
+    var layercurah10 = L.layerGroup();
+    var layercurahjam = L.layerGroup();
+    var layercurahhari = L.layerGroup();
+    var layeraws = L.layerGroup();
+    var layerawos = L.layerGroup();
+    var layerbataskabkota = L.layerGroup();
+    var layerbatasprov = L.layerGroup();
+    var layerjalan = L.layerGroup();
+    var layerjangkauan = L.layerGroup();
+    var layerkota = L.layerGroup();
+    var layerlintangbujur = L.layerGroup();
+    var layerrelkereta = L.layerGroup();
+    var layersungai = L.layerGroup();
+    var layerkali = L.layerGroup();
+    var layerkec = L.featureGroup();
+    var layerkab = L.featureGroup();
+    var layercape = L.layerGroup();
+    var layerki = L.layerGroup();
+    var layerli = L.layerGroup();
+    var layermslp = L.layerGroup();
+    var layersi = L.layerGroup();
+    var layertp = L.layerGroup();
+    var layerwind = L.layerGroup();
+    var layertt = L.layerGroup();
+    var layerfr24 = L.layerGroup();
+    var layerdummy = L.layerGroup();
+    var KRB_1 = L.layerGroup();
+    var KRB_2 = L.layerGroup();
+    var arglumajang = L.layerGroup();
+
+    var mbAttr =
+      'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+      'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+    //mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
+    var osm = L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      { attribution: mbAttr, maxZoom: 18 }
+    );
+
+    var Stadia_AlidadeSmoothDark = L.tileLayer(
+      "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
+      { maxZoom: 18, attribution: mbAttr }
+    );
+
+    var map = L.map("map", {
+      center: [-2.210775, 106.003578],
+      zoom: 8,
+      layers: [osm, layercmax, layerkota],
+    });
+
+    var logo = L.control({ position: "topright" });
+    logo.onAdd = function (map) {
+      var div = L.DomUtil.create("div", "myclass");
+      div.innerHTML =
+        '<span id="updatetime" style="float:right;background-color:#fff;"></span><br><img style="height: 8vh" src="img/logo_bmkg_juanda.png">';
+      return div;
+    };
+    logo.addTo(map);
+
+    var lc = L.control.locate().addTo(map);
+
+    var searchControl = L.esri.Geocoding.geosearch().addTo(map);
+    var results = L.layerGroup().addTo(map);
+    searchControl.on("results", function (data) {
+      results.clearLayers();
+      for (var i = data.results.length - 1; i >= 0; i--) {
+        results.addLayer(L.marker(data.results[i].latlng));
+      }
+    });
+
+    var warning = L.control({ position: "topleft" });
+    warning.onAdd = function (map) {
+      var div = L.DomUtil.create("div", "myclass");
+      div.innerHTML =
+        '<img onclick="marning()" onmouseover="" style="cursor: pointer; width:30px; height:30px; margin:3px;" src="img/payung.png">';
+      return div;
+    };
+    warning.addTo(map);
+
+    var ibf = L.control({ position: "topleft" });
+    ibf.onAdd = function (map) {
+      var div = L.DomUtil.create("div", "myclass");
+      div.innerHTML =
+        '<a href="https://juanda.jatim.bmkg.go.id/radar/SILIBERO/" target="_blank"><img src="img/LOGO_SILIBERO.png" width=35px height=35px/></a>';
+      return div;
+    };
+    ibf.addTo(map);
+
+    function marning() {
+      map.fire("modal", {
+        content: "<h1>Peringatan Dini</h1>" + "<p>" + peringatandini + "</p>",
+      });
+    }
+
+    var baseLayers = {
+      OpenStreetMap: osm,
+      //"Stadia ": Stadia_AlidadeSmoothDark,
+      //"Mapbox Streets": streets
+    };
+
+    var groupedOverlays = {
+      Radar: {
+        Reflektivitas: layercmax,
+        "Tinggi Puncak Awan": layereht,
+        "Hujan 10 menit terakhir": layersri,
+        "Hujan 1 jam terakhir": layerpac1h,
+        "Hujan 1 hari terakhir": layerpac1d,
+      },
+      Overlay: {
+        "Pergerakan partikel": layerhwind,
+        "Prediksi +1jam": layerrtr,
+        //"Cumulonimbus (CB)": layerswi,
+        "Cumulonimbus (CB)": layercb,
+        "Cell Tracking": layerctr,
+        "Cuaca Bandara": layerawos,
+        //"flightradar24.com": layerfr24,
+      },
+      "Curah Pos Hujan": {
+        "10 menit terakhir": layercurah10,
+        "1 jam terakhir": layercurahjam,
+        "1 hari terakhir": layercurahhari,
+        "Peringatan Dini": layerews,
+      },
+      Informasi: {
+        Kabupaten: layerkab,
+        Kecamatan: layerkec,
+        //"Desa": layerdes,
+        //"Batas Kota": layerbataskabkota,
+        //"Batas Provinsi": layerbatasprov,
+        //"Jalan": layerjalan,
+        //"Jangkauan": layerjangkauan,
+        Kota: layerkota,
+        //"Lintang Bujur": layerlintangbujur,
+        //"Rel Kereta": layerrelkereta,
+        //"Sungai": layersungai,
+        Sungai: layerkali,
+      },
+      SEMERU: {
+        KRB_1: KRB_1,
+        KRB_2: KRB_2,
+        ARG: arglumajang,
+      },
+
+      "Prakiraan Cuaca": {
+        Tanpa: layerdummy,
+        Cape: layercape,
+        "K-Index": layerki,
+        "Lifted Index": layerli,
+        MSLP: layermslp,
+        "Showalter Index": layersi,
+        Hujan: layertp,
+        Angin: layerwind,
+        Totals: layertt,
+      },
+    };
+    var options = {
+      exclusiveGroups: ["Radar", "Prakiraan Cuaca"],
+      groupCheckboxes: true,
+    };
+
+    L.control.groupedLayers(baseLayers, groupedOverlays, options).addTo(map);
+
+    const aquaclr =
+      "background-color: #00c0ef; width: 3rem; height: 3rem; display: block; left: -1.5rem; top: -1.5rem;position: relative; border-radius: 3rem 3rem 0; transform: rotate(45deg);border: 1px solid white";
+
+    const icaqua = L.divIcon({
+      className: "pin-aqua",
+      iconAnchor: [0, 24],
+      labelAnchor: [-6, 0],
+      popupAnchor: [0, -36],
+      html: '<span style="' + aquaclr + '" />',
+    });
+
+    const yellowclr =
+      "background-color: #f39c12; width: 3rem; height: 3rem; display: block; left: -1.5rem; top: -1.5rem;position: relative; border-radius: 3rem 3rem 0; transform: rotate(45deg);border: 1px solid white";
+
+    const icyellow = L.divIcon({
+      className: "pin-yellow",
+      iconAnchor: [0, 24],
+      labelAnchor: [-6, 0],
+      popupAnchor: [0, -36],
+      html: '<span style="' + yellowclr + '" />',
+    });
+
+    const orangeclr =
+      "background-color: #ff851b; width: 3rem; height: 3rem; display: block; left: -1.5rem; top: -1.5rem;position: relative; border-radius: 3rem 3rem 0; transform: rotate(45deg);border: 1px solid white";
+
+    const icorange = L.divIcon({
+      className: "pin-orange",
+      iconAnchor: [0, 24],
+      labelAnchor: [-6, 0],
+      popupAnchor: [0, -36],
+      html: '<span style="' + orangeclr + '" />',
+    });
+
+    const redclr =
+      "background-color: #dd4b39; width: 3rem; height: 3rem; display: block; left: -1.5rem; top: -1.5rem;position: relative; border-radius: 3rem 3rem 0; transform: rotate(45deg);border: 1px solid white";
+
+    const icred = L.divIcon({
+      className: "pin-red",
+      iconAnchor: [0, 24],
+      labelAnchor: [-6, 0],
+      popupAnchor: [0, -36],
+      html: '<span style="' + redclr + '" />',
+    });
+
+    const maroonclr =
+      "background-color: #d81b60; width: 3rem; height: 3rem; display: block; left: -1.5rem; top: -1.5rem;position: relative; border-radius: 3rem 3rem 0; transform: rotate(45deg);border: 1px solid white";
+
+    const icmaroon = L.divIcon({
+      className: "pin-maroon",
+      iconAnchor: [0, 24],
+      labelAnchor: [-6, 0],
+      popupAnchor: [0, -36],
+      html: '<span style="' + maroonclr + '" />',
+    });
+
+    var awsIcon = L.icon({
+      iconUrl: "img/aws.png",
+
+      iconSize: [30, 30],
+      iconAnchor: [15, 30],
+    });
+
+    var planeIcon = L.icon({
+      iconUrl: "img/markairport.png",
+
+      iconSize: [30, 40],
+      iconAnchor: [15, 40],
+    });
+
+    function loadstatic() {
+      L.imageOverlay(
+        "transparent/batas_kab_kota.png",
+        L.latLngBounds(
+          L.latLng(-5.608692, 110.952998),
+          L.latLng(-9.205359, 114.581819)
+        ),
+        { opacity: 0.5, zindex: 100 }
+      ).addTo(layerbataskabkota);
+      L.imageOverlay(
+        "transparent/batas_prov.png",
+        L.latLngBounds(
+          L.latLng(-5.608692, 110.952998),
+          L.latLng(-9.205359, 114.581819)
+        ),
+        { opacity: 0.5, zindex: 100 }
+      ).addTo(layerbatasprov);
+      L.imageOverlay(
+        "transparent/jalan.png",
+        L.latLngBounds(
+          L.latLng(-5.608692, 110.952998),
+          L.latLng(-9.205359, 114.581819)
+        ),
+        { opacity: 0.5, zindex: 100 }
+      ).addTo(layerjalan);
+      L.imageOverlay(
+        "transparent/jangkauan.png",
+        L.latLngBounds(
+          L.latLng(-5.608692, 110.652998),
+          L.latLng(-9.205359, 114.581819)
+        ),
+        { opacity: 0.5, zindex: 100 }
+      ).addTo(layerjangkauan);
+      L.imageOverlay(
+        "transparent/pangkalpinang.png",
+        L.latLngBounds(
+          L.latLng(-0.136438, 103.90944),
+          L.latLng(-4.012995, 107.971990)
+        ),
+        { opacity: 0.5, zindex: 100 }
+      ).addTo(layerkota);
+      L.imageOverlay(
+        "transparent/lintang_bujur.png",
+        L.latLngBounds(
+          L.latLng(11.881121, 90.809540),
+          L.latLng(-12.688232, 143.2)
+        ),
+        { opacity: 0.5, zindex: 100 }
+      ).addTo(layerlintangbujur);
+      L.imageOverlay(
+        "transparent/rel_kereta.png",
+        L.latLngBounds(
+          L.latLng(-5.608692, 110.952998),
+          L.latLng(-9.205359, 114.581819)
+        ),
+        { opacity: 0.5, zindex: 100 }
+      ).addTo(layerrelkereta);
+      //L.imageOverlay('transparent/sungai.png', L.latLngBounds(L.latLng(-5.608692,110.952998), L.latLng(-9.205359,114.581819)),{opacity: 0.5,zindex:100}).addTo(layersungai);
+
+      $.ajax({
+        url: "transparent/jatimkab.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          geojson = L.geoJson(result, {
+            style: {
+              color: "#000000",
+              weight: 2,
+              opacity: 1,
+              fillOpacity: 0,
+            },
+          }).addTo(layerkab);
+          geojson.eachLayer(function (layer) {
+            layer.bindPopup(layer.feature.properties["KABKOT"]);
+          });
+        },
+      });
+
+      $.ajax({
+        url: "transparent/jatimkec.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          geojson = L.geoJson(result, {
+            style: {
+              color: "#006400",
+              weight: 2,
+              opacity: 0.5,
+              fillOpacity: 0.01,
+            },
+          }).addTo(layerkec);
+          geojson.eachLayer(function (layer) {
+            layer.bindPopup(
+              layer.feature.properties["NAME_3"] +
+              ", " +
+              layer.feature.properties["NAME_2"]
+            );
+          });
+        },
+      });
+
+      $.ajax({
+        url: "transparent/sungai.geojson",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          geojson = L.geoJson(result, {
+            style: {
+              color: "#ff0000",
+              weight: 2,
+              opacity: 0.5,
+            },
+          }).addTo(layerkali);
+        },
+      });
+
+      $.ajax({
+        url: "transparent/KRB_2.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          geojson = L.geoJson(result, {
+            style: {
+              color: "#0000FF",
+              weight: 2,
+              dashArray: "1",
+              fillOpacity: 0,
+              opacity: 0.4,
+            },
+          }).addTo(KRB_2);
+          // geojson.eachLayer(function (layer) {
+          // 	layer.bindPopup(layer.feature.properties['NAME_3']+', '+layer.feature.properties['NAME_2']);
+          // });
+        },
+      });
+
+      $.ajax({
+        url: "transparent/KRB_1.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          geojson = L.geoJson(result, {
+            style: {
+              color: "#DC143C",
+              weight: 2,
+              dashArray: "3",
+              fillOpacity: 0,
+              opacity: 0.3,
+            },
+          }).addTo(KRB_1);
+          // geojson.eachLayer(function (layer) {
+          // 	layer.bindPopup(layer.feature.properties['NAME_3']+', '+layer.feature.properties['NAME_2']);
+          // });
+        },
+      });
+    }
+
+    var legendcmax = L.control({ position: "bottomleft" });
+    legendcmax.onAdd = function (map) {
+      var div = L.DomUtil.create("div", "legendcmax");
+      div.innerHTML += '<img style="height: 7vh" src="img/cmax.png">';
+      return div;
+    };
+    legendcmax.addTo(map);
+
+    var legendeht = L.control({ position: "bottomleft" });
+    legendeht.onAdd = function (map) {
+      var div = L.DomUtil.create("div", "legendeht");
+      div.innerHTML += '<img style="height: 4vh" src="img/eht.png">';
+      return div;
+    };
+
+    var legendsripac = L.control({ position: "bottomleft" });
+    legendsripac.onAdd = function (map) {
+      var div = L.DomUtil.create("div", "legendsripac");
+      div.innerHTML += '<img style="height: 4vh" src="img/sripac.png">';
+      return div;
+    };
+
+    $('div#leaflet-control-layers-group-1 input[type="radio"]').on(
+      "change",
+      function () {
+        var tipe = $(this).parent("label").text().trim();
+        map.removeControl(legendcmax);
+        map.removeControl(legendeht);
+        map.removeControl(legendsripac);
+        if (tipe == "Reflektivitas") {
+          legendcmax.addTo(map);
+        } else if (tipe == "Tinggi Puncak Awan") {
+          legendeht.addTo(map);
+        } else if (
+          tipe == "Hujan 10 menit terakhir" ||
+          tipe == "Hujan 1 jam terakhir" ||
+          tipe == "Hujan 1 hari terakhir"
+        ) {
+          legendsripac.addTo(map);
+        }
+      }
+    );
+
+    $('div#leaflet-control-layers-group-2 input[type="checkbox"]').on(
+      "change",
+      function () {
+        var tipe = $(this).parent("label").text().trim();
+        if (tipe == "Cuaca Bandara") {
+          map.flyTo([-7.379813, 112.786884], 15);
+        }
+      }
+    );
+
+    function clearLayer(container) {
+      container.eachLayer(function (layer) {
+        container.removeLayer(layer);
+      });
+    }
+
+    function loaddynamic() {
+      $.ajax({
+        type: "GET",
+        url: "data/data.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          console.log(result.tanggal);
+          $("#updatetime").html("&nbsp;" + result.tanggal + "&nbsp;");
+          clearLayer(layercmax);
+          L.imageOverlay(
+            result.cmax,
+            L.latLngBounds(
+              L.latLng(-5.608692, 110.952998),
+              L.latLng(-9.205359, 114.581819)
+            ),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layercmax);
+
+          clearLayer(layereht);
+          L.imageOverlay(
+            result.eht,
+            L.latLngBounds(
+              L.latLng(-5.608692, 110.952998),
+              L.latLng(-9.205359, 114.581819)
+            ),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layereht);
+          clearLayer(layerhwind);
+          L.imageOverlay(
+            result.hwind,
+            L.latLngBounds(
+              L.latLng(-5.608692, 110.952998),
+              L.latLng(-9.205359, 114.581819)
+            ),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layerhwind);
+          clearLayer(layerrtr);
+          L.imageOverlay(
+            result.rtr,
+            L.latLngBounds(
+              L.latLng(-5.608692, 110.952998),
+              L.latLng(-9.205359, 114.581819)
+            ),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layerrtr);
+          clearLayer(layersri);
+          L.imageOverlay(
+            result.sri,
+            L.latLngBounds(
+              L.latLng(-5.608692, 110.952998),
+              L.latLng(-9.205359, 114.581819)
+            ),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layersri);
+          clearLayer(layerpac1h);
+          L.imageOverlay(
+            result.pac1h,
+            L.latLngBounds(
+              L.latLng(-5.608692, 110.952998),
+              L.latLng(-9.205359, 114.581819)
+            ),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layerpac1h);
+          clearLayer(layerpac1d);
+          L.imageOverlay(
+            result.pac1d,
+            L.latLngBounds(
+              L.latLng(-5.608692, 110.952998),
+              L.latLng(-9.205359, 114.581819)
+            ),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layerpac1d);
+          /*clearLayer(layerctr);
+    fetch(result.ctr)
+      .then(res => res.text())
+      .then(kmltext => {
+        const parser = new DOMParser();
+        const kml = parser.parseFromString(kmltext, 'text/xml');
+        const track = new L.KML(kml);
+        layerctr.addLayer(track);
+      });
+      */
+          clearLayer(layerctr);
+          $.ajax({
+            url: result.ctrgj,
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+              geojson = L.geoJson(result, {
+                style: {
+                  color: "#FF0000",
+                  weight: 2,
+                  opacity: 0.5,
+                },
+              }).addTo(layerctr);
+              geojson.eachLayer(function (layer) {
+                layer.bindPopup(
+                  "Hor.Direction: " +
+                  layer.feature.properties["Hor.Direction"] +
+                  " deg<br>Hor.Speed: " +
+                  layer.feature.properties["Hor.Speed"] +
+                  " m/s<br>MaxZ: " +
+                  layer.feature.properties["MaxZ"] +
+                  " dBZ<br>Size: " +
+                  layer.feature.properties["Size"] +
+                  " km<sup>2</sup><br>Type: " +
+                  layer.feature.properties["Type"]
+                );
+              });
+            },
+          });
+
+          clearLayer(layerswi);
+          fetch(result.swi)
+            .then((res) => res.text())
+            .then((kmltext) => {
+              const parser = new DOMParser();
+              const kml = parser.parseFromString(kmltext, "text/xml");
+              const track = new L.KML(kml);
+              layerswi.addLayer(track);
+            });
+          clearLayer(layercb);
+          $.ajax({
+            url: result.swigj,
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+              geojson = L.geoJson(result, {
+                style: {
+                  color: "#FF0000",
+                  weight: 2,
+                  opacity: 0.5,
+                },
+              }).addTo(layercb);
+              geojson.eachLayer(function (layer) {
+                layer.bindPopup(
+                  "Storm<br>Size: " +
+                  layer.feature.properties["Size"] +
+                  " km<sup>2</sup><br>Volume: " +
+                  layer.feature.properties["Volume"] +
+                  " km<sup>3</sup><br>Mass: " +
+                  layer.feature.properties["Mass"] +
+                  " tons<br>Min height: " +
+                  layer.feature.properties["Minheight"] +
+                  " km<br>Max height: " +
+                  layer.feature.properties["Maxheight"] +
+                  " km<br>Max Z: " +
+                  layer.feature.properties["MaxZ"] +
+                  " dBz<br>Max V: " +
+                  layer.feature.properties["MaxV"] +
+                  " m/s<br>Max W: " +
+                  layer.feature.properties["MaxW"] +
+                  " m/s<br>Height of Max Z: " +
+                  layer.feature.properties["HeightofmaxZ"] +
+                  " km<br>Height of Max V: " +
+                  layer.feature.properties["HeightofmaxV"] +
+                  " km<br>Height of Max W: " +
+                  layer.feature.properties["HeightofmaxW"] +
+                  " km"
+                );
+              });
+            },
+          });
+
+          clearLayer(layercape);
+          L.imageOverlay(
+            result.cape,
+            L.latLngBounds(L.latLng(-5.5, 110.5), L.latLng(-9.5, 114.5)),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layercape);
+          clearLayer(layerki);
+          L.imageOverlay(
+            result.ki,
+            L.latLngBounds(L.latLng(-5.5, 110.5), L.latLng(-9.5, 114.5)),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layerki);
+          clearLayer(layerli);
+          L.imageOverlay(
+            result.li,
+            L.latLngBounds(L.latLng(-5.5, 110.5), L.latLng(-9.5, 114.5)),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layerli);
+          clearLayer(layermslp);
+          L.imageOverlay(
+            result.mslp,
+            L.latLngBounds(L.latLng(-5.5, 110.5), L.latLng(-9.5, 114.5)),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layermslp);
+          clearLayer(layersi);
+          L.imageOverlay(
+            result.si,
+            L.latLngBounds(L.latLng(-5.5, 110.5), L.latLng(-9.5, 114.5)),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layersi);
+          clearLayer(layertp);
+          L.imageOverlay(
+            result.tp,
+            L.latLngBounds(L.latLng(-5.5, 110.5), L.latLng(-9.5, 114.5)),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layertp);
+          clearLayer(layerwind);
+          L.imageOverlay(
+            result.wind,
+            L.latLngBounds(L.latLng(-5.5, 110.5), L.latLng(-9.5, 114.5)),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layerwind);
+          clearLayer(layertt);
+          L.imageOverlay(
+            result.tt,
+            L.latLngBounds(L.latLng(-5.5, 110.5), L.latLng(-9.5, 114.5)),
+            { opacity: 0.5, zindex: 100 }
+          ).addTo(layertt);
+        },
+      });
+      $.ajax({
+        type: "GET",
+        url: "data/ews.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          clearLayer(layerews);
+          for (i = 0; i < result.length; i++) {
+            var popup =
+              "<strong>" +
+              result[i].namapos +
+              "</strong><br>" +
+              result[i].namakecamatan;
+            var ikon = null;
+            if (result[i].peringatan == "waspada") {
+              ikon = icyellow;
+              popup +=
+                "<br>Waspada curah: " +
+                parseFloat(result[i].totalcurah).toFixed(2) +
+                "mm";
+            } else if (result[i].peringatan == "siaga") {
+              ikon = icorange;
+              popup +=
+                "<br>Siaga curah: " +
+                parseFloat(result[i].totalcurah).toFixed(2) +
+                "mm";
+            } else if (result[i].peringatan == "awas") {
+              ikon = icred;
+              popup +=
+                "<br>Awas curah: " +
+                parseFloat(result[i].totalcurah).toFixed(2) +
+                "mm";
+            }
+            L.marker([result[i].ydesimal, result[i].xdesimal], { icon: ikon })
+              .addTo(layerews)
+              .bindPopup(popup);
+          }
+        },
+      });
+      $.ajax({
+        type: "GET",
+        url: "data/curah10.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          clearLayer(layercurah10);
+          for (i = 0; i < result.length; i++) {
+            var popup =
+              "<strong>" +
+              result[i].namapos +
+              "</strong><br>" +
+              result[i].namakecamatan;
+            var ikon = null;
+            if (result[i].kategoriteks == "ringan") {
+              ikon = icaqua;
+              popup += "<br>Hujan Ringan<br>Curah 10 menit terakhir";
+            } else if (result[i].kategoriteks == "sedang") {
+              ikon = icyellow;
+              popup += "<br>Hujan Sedang<br>Curah 10 menit terakhir";
+            } else if (result[i].kategoriteks == "deras") {
+              ikon = icred;
+              popup += "<br>Hujan Deras<br>Curah 10 menit terakhir";
+            } else if (result[i].kategoriteks == "ekstrem") {
+              ikon = icmaroon;
+              popup += "<br>Hujan Ekstrem<br>Curah 10 menit terakhir";
+            }
+            L.marker([result[i].ydesimal, result[i].xdesimal], { icon: ikon })
+              .addTo(layercurah10)
+              .bindPopup(popup);
+          }
+        },
+      });
+      $.ajax({
+        type: "GET",
+        url: "data/curahjam.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          clearLayer(layercurahjam);
+          for (i = 0; i < result.length; i++) {
+            var popup =
+              "<strong>" +
+              result[i].namapos +
+              "</strong><br>" +
+              result[i].namakecamatan;
+            var ikon = null;
+            if (result[i].kategoriteks == "ringan") {
+              ikon = icaqua;
+              popup +=
+                "<br>Hujan Ringan<br>(0,1-5 mm)<br>Curah 1 jam terakhir";
+            } else if (result[i].kategoriteks == "sedang") {
+              ikon = icyellow;
+              popup +=
+                "<br>Hujan Sedang<br>(5-10 mm)<br>Curah 1 jam terakhir";
+            } else if (result[i].kategoriteks == "deras") {
+              ikon = icred;
+              popup +=
+                "<br>Hujan Deras<br>(10-20 mm)<br>Curah 1 jam terakhir";
+            } else if (result[i].kategoriteks == "ekstrem") {
+              ikon = icmaroon;
+              popup +=
+                "<br>Hujan Ekstrem<br>(>20 mm)<br>Curah 1 jam terakhir";
+            }
+            L.marker([result[i].ydesimal, result[i].xdesimal], { icon: ikon })
+              .addTo(layercurahjam)
+              .bindPopup(popup);
+          }
+        },
+      });
+      $.ajax({
+        type: "GET",
+        url: "data/curahhari.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          clearLayer(layercurahhari);
+          for (i = 0; i < result.length; i++) {
+            var popup =
+              "<strong>" +
+              result[i].namapos +
+              "</strong><br>" +
+              result[i].namakecamatan;
+            var ikon = null;
+            if (result[i].kategoriteks == "ringan") {
+              ikon = icaqua;
+              popup +=
+                "<br>Hujan Ringan<br>(1-20 mm)<br>Curah 1 hari terakhir";
+            } else if (result[i].kategoriteks == "sedang") {
+              ikon = icyellow;
+              popup +=
+                "<br>Hujan Sedang<br>(20-50 mm)<br>Curah 1 hari terakhir";
+            } else if (result[i].kategoriteks == "deras") {
+              ikon = icred;
+              popup +=
+                "<br>Hujan Deras<br>(50-100 mm)<br>Curah 1 hari terakhir";
+            } else if (result[i].kategoriteks == "ekstrem") {
+              ikon = icmaroon;
+              popup +=
+                "<br>Hujan Ekstrem<br>(>100 mm)<br>Curah 1 hari terakhir";
+            }
+            L.marker([result[i].ydesimal, result[i].xdesimal], { icon: ikon })
+              .addTo(layercurahhari)
+              .bindPopup(popup);
+          }
+        },
+      });
+      $.ajax({
+        url: "data/aws.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          clearLayer(layeraws);
+          for (i = 0; i < result.length; i++) {
+            var popup =
+              "<strong>" +
+              result[i].station +
+              "</strong><br><strong>" +
+              result[i].idstation +
+              "</strong><br><strong>" +
+              result[i].time +
+              "</strong><br><strong>rr</strong> : " +
+              result[i].rr +
+              "<br>" +
+              "<strong>ws_avg</strong> : " +
+              result[i].ws_avg +
+              "<br>" +
+              "<strong>ws_max</strong> : " +
+              result[i].ws_max +
+              "<br>" +
+              "<strong>wd_avg</strong> : " +
+              result[i].wd_avg +
+              "<br>" +
+              "<strong>tt_air_max</strong> : " +
+              result[i].tt_air_max +
+              "<br>" +
+              "<strong>tt_air_avg</strong> : " +
+              result[i].tt_air_avg +
+              "<br>" +
+              "<strong>tt_air_min</strong> : " +
+              result[i].tt_air_min +
+              "<br>" +
+              "<strong>rh_avg</strong> : " +
+              result[i].rh_avg +
+              "<br>" +
+              "<strong>pp_air</strong> : " +
+              result[i].pp_air +
+              "<br>" +
+              "<strong>sr_avg</strong> : " +
+              result[i].sr_avg +
+              "<br>" +
+              "<strong>tt_sea</strong> : " +
+              result[i].tt_sea +
+              "<br>" +
+              "<strong>ws_50cm</strong> : " +
+              result[i].ws_50cm +
+              "<br>";
+            //L.marker([result[i].latitude, result[i].longitude], {icon: awsIcon}).bindPopup(popup).addTo(layeraws);
+            L.marker([-7.7043771, 112.7221155], { icon: awsIcon })
+              .bindPopup(popup)
+              .addTo(layeraws);
+          }
+        },
+      });
+      $.ajax({
+        url: "data/awos.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          clearLayer(layerawos);
+          for (i = 0; i < result.length; i++) {
+            var popup =
+              "<strong>Landasan Pacu " +
+              result[i].runway +
+              "</strong><br>" +
+              result[i].waktu +
+              "<br><strong>Angin</strong><br>Arah : " +
+              result[i].windir +
+              "<br>Kecepatan : " +
+              result[i].winspd +
+              "<br><strong>Suhu</strong> : " +
+              result[i].temp +
+              "<br><strong>Kelembapan</strong> : " +
+              result[i].humid +
+              "<br><strong>QNH</strong> : " +
+              result[i].qnh +
+              "<br><strong>QFE</strong> : " +
+              result[i].qfe;
+            L.marker([result[i].lat, result[i].lon], { icon: planeIcon })
+              .bindPopup(popup)
+              .addTo(layerawos);
+          }
+        },
+      });
+
+      //  // warning lama
+      // $.ajax({
+      //       url: "../webkantor/data/warning.json",
+      //       dataType: "JSON",
+      //       type: "GET",
+      //       success: function(result) {
+      // var warningall = [];
+      // for (i = 0; i < result.length; i++) {
+      // 	warningall.push('<div><strong>' + result[i].tanggal + '</strong>' + result[i].warningisi + '<a class="link-block" href="javascript:callperingatanModal();"></a></div>');
+      // }
+      // if (result.length < 1) warningall.push('<div><strong>Tidak Ada Peringatan Dini</strong></div>');
+      // 	peringatandini = warningall.join('');
+      // 	console.log(result);
+      //   }
+      // });
+
+      $.ajax({
+        url: "https://juanda.jatim.bmkg.go.id/flask/api/warningcuaca/jawatimur",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          warning = result.data;
+
+          peringatandini = warning;
+
+          console.log(result.data);
+          console.log(typeof result.data);
+        },
+      });
+
+      $.ajax({
+        url: "data/arglumajang.json",
+        dataType: "JSON",
+        type: "GET",
+        success: function (result) {
+          clearLayer(arglumajang);
+          for (i = 0; i < result.length; i++) {
+            var popup =
+              "<strong>" +
+              result[i].pos +
+              "</strong><br>" +
+              result[i].time +
+              " UTC" +
+              "<br><strong>CH 24 jam</strong><br>Total : " +
+              result[i].rr +
+              " mm";
+            L.marker([result[i].lat, result[i].lon], { icon: awsIcon })
+              .bindPopup(popup)
+              .addTo(arglumajang);
+          }
+          console.log(arglumajang);
+        },
+      });
+    }
+
+    var pesawatIcon = L.icon({
+      iconUrl: "img/pesawat.png",
+
+      iconSize: [64, 64],
+      iconAnchor: [32, 17],
+    });
+
+    $(function () {
+      $(document).ready(function () {
+        loadstatic();
+        loaddynamic();
+        var refreshId = setInterval(function () {
+          loaddynamic();
+        }, 30000);
+        //loadfr24();
+      });
+    });
+  </script>
+  <script type="text/javascript">
+    var _Hasync = _Hasync || [];
+    _Hasync.push(["Histats.start", "1,4552844,4,205,255,27,00011111"]);
+    _Hasync.push(["Histats.fasi", "1"]);
+    _Hasync.push(["Histats.track_hits", ""]);
+    (function () {
+      var hs = document.createElement("script");
+      hs.type = "text/javascript";
+      hs.async = true;
+      hs.src = "//s10.histats.com/js15_as.js";
+      //(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(hs);
+    })();
+  </script>
+</body>
+
+</html>

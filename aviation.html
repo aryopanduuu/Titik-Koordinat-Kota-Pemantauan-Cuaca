@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-MXD2NCT29J"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-MXD2NCT29J");
+    </script>
+    <title>BMKG Juanda - WOFI</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="img/logo.png" />
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="description"
+      content="BMKG Stasiun Meteorologi Juanda Sidoarjo"
+    />
+    <meta
+      name="keywords"
+      content="BMKG Juanda, Prakiraan Cuaca, Radar Cuaca, Cuaca Penerbangan, Surabaya, Sidoarjo, Jawa Timur"
+    />
+    <meta name="author" content="0x35" />
+    <meta name="theme-color" content="#2A3F54" />
+    <meta
+      property="og:site_name"
+      content="BMKG Stasiun Meteorologi Juanda Sidoarjo"
+    />
+    <meta
+      property="og:title"
+      content="Weather Observation and Forecast Integrated (WOFI)"
+    />
+    <meta
+      property="og:description"
+      content="Info Radar Cuaca, Cuaca Bandara Juanda, Curah Hujan dan Peringatan Dini. BMKG Juanda &copy; 2020"
+    />
+    <meta
+      property="og:image"
+      itemprop="image"
+      content="https://juanda.jatim.bmkg.go.id/webkantor/img/logo_putih.png"
+    />
+    <meta property="og:type" content="website" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.featuregroup.subgroup@1.0.2/dist/leaflet.featuregroup.subgroup.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.70.0/dist/L.Control.Locate.min.css"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.70.0/dist/L.Control.Locate.min.js"
+      charset="utf-8"
+    ></script>
+    <script src="https://unpkg.com/esri-leaflet@2.3.3/dist/esri-leaflet.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/esri-leaflet-geocoder@2.3.2/dist/esri-leaflet-geocoder.css"
+    />
+    <script src="https://unpkg.com/esri-leaflet-geocoder@2.3.2/dist/esri-leaflet-geocoder.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-groupedlayercontrol/0.6.1/leaflet.groupedlayercontrol.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-groupedlayercontrol/0.6.1/leaflet.groupedlayercontrol.min.css"
+    />
+
+    <script src="dist/L.Modal.min.js"></script>
+    <link rel="stylesheet" href="dist/leaflet.modal.min.css" />
+    <script src="dist/L.KML.js"></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+    </style>
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+      }
+      #map {
+        height: 100%;
+        width: 100vw;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+
+    var layercmax = L.layerGroup();
+    var layeradiz = L.layerGroup();
+    var layerafiz = L.layerGroup();
+    var layerairnav = L.layerGroup();
+    var layerarpvolii = L.layerGroup();
+    var layerashtam = L.layerGroup();
+    var layeratsdomestic = L.layerGroup();
+    var layeratsinternational = L.layerGroup();
+    var layerrnplower = L.layerGroup();
+    var layeratz = L.layerGroup();
+    var layercta = L.layerGroup();
+    var layerdrone = L.layerGroup();
+    var layerfir = L.layerGroup();
+    var layerfss = L.layerGroup();
+    var layerkkop = L.layerGroup();
+
+    var mbAttr =
+        'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+      //mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
+      var osm = L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        { attribution: mbAttr, maxZoom: 18 }
+      );
+
+      var Stadia_AlidadeSmoothDark = L.tileLayer(
+        "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png",
+        { maxZoom: 18, attribution: mbAttr }
+      );
+
+      var map = L.map("map", {
+        center: [-7.7043771, 112.7221155],
+        zoom: 9,
+        layers: [osm, layercmax],
+      });
+
+      var logo = L.control({ position: "topright" });
+      logo.onAdd = function (map) {
+        var div = L.DomUtil.create("div", "myclass");
+        div.innerHTML =
+          '<span id="updatetime" style="float:right;background-color:#fff;"></span><br><img style="height: 8vh" src="img/logo_bmkg_juanda.png">';
+        return div;
+      };
+      logo.addTo(map);
+
+      var baseLayers = {
+        OpenStreetMap: osm,
+        
+      };
+
+
+      var groupedOverlays = {
+        Radar: {
+          "Reflektivitas": layercmax,
+        },
+        Overlay: {
+          "Adiz": layeradiz,
+          "Afiz": layerafiz,
+          "Airnav Branch": layerairnav,
+          "Arp Vol ii": layerarpvolii,
+          "Ashtam": layerashtam,
+          "Ats Route Domestic": layeratsdomestic,
+          "Ats Route International" : layeratsinternational,
+          "Ats Route Rnp Lower": layerrnplower,
+          "Atz Polygon" : layeratz,
+          "Cta Polygon" : layercta,
+          "Drone" : layerdrone,
+          "Fir" : layerfir,
+          "Fss" : layerfss,
+          "Kkop" : layerkkop,
+        //   //"Cumulonimbus (CB)": layerswi,
+        //   "Cumulonimbus (CB)": layercb,
+        //   "Cell Tracking": layerctr,
+        //   "Cuaca Bandara": layerawos,
+        //   //"flightradar24.com": layerfr24,
+        },
+        // "Curah Pos Hujan": {
+        //   "10 menit terakhir": layercurah10,
+        //   "1 jam terakhir": layercurahjam,
+        //   "1 hari terakhir": layercurahhari,
+        //   "Peringatan Dini": layerews,
+        // },
+        
+      };
+      var options = {
+        exclusiveGroups: ["Radar", "Overlays"],
+        groupCheckboxes: true,
+      };
+
+      L.control.groupedLayers(baseLayers, groupedOverlays, options).addTo(map);
+
+      function loadstatic() {
+        $.ajax({
+          url: "enroute/adiz.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layeradiz);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["KABKOT"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/afiz_polygon.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layerafiz);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/airnav_branch.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layerairnav);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/arp_vol_ii.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layerarpvolii);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/ashtam.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layerashtam);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/ats_route_domestic.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layeratsdomestic);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/ats_route_international.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layeratsinternational);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/ats_route_rnp_lower.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layerrnplower);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/atz_polygon.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layeratz);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/cta_polygon.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layercta);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/drone_plotting.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layerdrone);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/fir_polygon.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layerfir);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/fss_polygon.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layerfss);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+        $.ajax({
+          url: "enroute/kkop.geojson",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                geojson = L.geoJson(result, {
+                style: {
+                    color: "#000000",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0,
+                },
+                }).addTo(layerkkop);
+                geojson.eachLayer(function (layer) {
+                layer.bindPopup(layer.feature.properties["geometry_name"]);
+                });
+            },
+        });
+
+      }
+
+      function clearLayer(container) {
+        container.eachLayer(function (layer) {
+          container.removeLayer(layer);
+        });
+      }
+
+      function loaddynamic() {
+        $.ajax({
+            type: "GET",
+            url: "http://36.94.146.17/radar/data/data.json",
+            dataType: "JSON",
+            type: "GET",
+            success: function (result) {
+                console.log(result.tanggal);
+                $("#updatetime").html("&nbsp;" + result.tanggal + "&nbsp;");
+                clearLayer(layercmax);
+                L.imageOverlay(
+                "http://36.94.146.17/"+result.cmax,
+                L.latLngBounds(
+                    L.latLng(-5.608692, 110.952998),
+                    L.latLng(-9.205359, 114.581819)
+                ),
+                { opacity: 0.5, zindex: 100 }
+                ).addTo(layercmax);
+          }
+        });
+      }
+
+      $(function () {
+        $(document).ready(function () {
+          loadstatic();
+          loaddynamic();
+          var refreshId = setInterval(function () {
+            loaddynamic();
+          }, 30000);
+          //loadfr24();
+        });
+      });
+
+    </script>
+    </body>
+    </html>
+
